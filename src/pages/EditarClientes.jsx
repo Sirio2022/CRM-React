@@ -1,9 +1,26 @@
-import { useNavigate, Form, useActionData, redirect } from 'react-router-dom';
+import {
+  Form,
+  useNavigate,
+  useLoaderData,
+  useActionData,
+  redirect,
+} from 'react-router-dom';
+import { obtenerCliente, actualizarCliente } from '../data/clientes';
 import Formulario from '../components/Formulario';
 import Error from '../components/Error';
-import { agregarCliente } from '../data/clientes';
 
-export async function action({ request }) {
+export async function loader({ params }) {
+  const cliente = await obtenerCliente(params.clienteId);
+  if (Object.values(cliente).length === 0) {
+    throw new Response('', {
+      status: 404,
+      statusText: 'Cliente no existe en la base de datos',
+    });
+  }
+  return cliente;
+}
+
+export async function action({ request, params }) {
   const formData = await request.formData();
 
   const data = Object.fromEntries(formData);
@@ -27,23 +44,25 @@ export async function action({ request }) {
   if (Object.keys(errors).length) {
     return errors;
   }
-  await agregarCliente(data);
+
+  // TODO: Actualizar cliente
+  await actualizarCliente(params.clienteId, data);
 
   return redirect('/');
 }
 
-function NuevoCliente() {
-  const errors = useActionData();
+function EditarClientes() {
   const navigate = useNavigate();
-
+  const cliente = useLoaderData();
+  const errors = useActionData();
   return (
     <>
-      <h1 className="font-black text-4xl text-blue-900">Nuevo Cliente</h1>
+      <h1 className="font-black text-4xl text-blue-900">Editar Cliente</h1>
       <p className="mt-3">
-        Llena todos los campos para registrar un nuevo cliente
+        Ingresa los datos a modificar del cliente en el formulario
       </p>
 
-      <div className="flex justify-end cursor:pointer hover:bg-blue-900">
+      <div className="flex justify-end">
         <button
           className="bg-blue-800 text-white px-3 py-1 font-bold uppercase"
           onClick={() => navigate('/')}
@@ -57,12 +76,12 @@ function NuevoCliente() {
           errors.map((error, i) => <Error key={i}>{error}</Error>)}
 
         <Form method="POST" noValidate>
-          <Formulario />
+          <Formulario cliente={cliente} />
 
           <input
             type="submit"
-            className="mt-5 w-full bg-blue-800 p-3 font-bold text-white text-lg"
-            value="Registrar Cliente"
+            className="mt-5 w-full bg-blue-800 p-3 font-bold text-white text-lg cursor:pointer hover:bg-blue-900"
+            value="Guardar Cambios"
           />
         </Form>
       </div>
@@ -70,4 +89,4 @@ function NuevoCliente() {
   );
 }
 
-export default NuevoCliente;
+export default EditarClientes;

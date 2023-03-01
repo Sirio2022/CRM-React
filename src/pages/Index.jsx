@@ -25,7 +25,7 @@ function Index() {
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className='text-center'>
             {clientes.map((cliente) => (
               <Cliente key={cliente.id} cliente={cliente} />
             ))}

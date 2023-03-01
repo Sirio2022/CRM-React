@@ -9,9 +9,8 @@ export default function ErrorPage() {
         CRM - CLIENTES
       </h1>
       <div className="text-center bg-red-600 text-white font-bold p-3 uppercase">
-        {error.message}
+        {error.message || error.statusText}
       </div>
-      <p className="text-center text-2xl">Hubo un error!</p>
     </div>
   );
 } // Path: src\components\ErrorPage.jsx
