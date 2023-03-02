@@ -43,7 +43,7 @@ function NuevoCliente() {
         Llena todos los campos para registrar un nuevo cliente
       </p>
 
-      <div className="flex justify-end cursor:pointer hover:bg-blue-900">
+      <div className="flex justify-end">
         <button
           className="bg-blue-800 text-white px-3 py-1 font-bold uppercase"
           onClick={() => navigate('/')}
